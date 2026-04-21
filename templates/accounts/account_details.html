@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="app">
+    <h2>Account Detail</h2>
+
+    <p v-if="loading">Loading account...</p>
+    <p v-if="error" style="color:red;">[[ error ]]</p>
+
+    <div v-if="account" style="background:white; padding:1rem; margin-bottom:1rem;">
+        <h3>[[ account.name ]]</h3>
+        <p><strong>Email:</strong> [[ account.email ]]</p>
+        <p><strong>Phone:</strong> [[ account.phone_number ]]</p>
+        <p>
+            <strong>Status:</strong>
+            <span :style="statusStyle(account.status)">[[ account.status.toUpperCase() ]]</span>
+        </p>
+        <p>
+            <strong>Arrears:</strong>
+            <span v-if="account.is_in_arrears" style="color:red; font-weight:bold;">⚠ In Arrears</span>
+            <span v-else style="color:green;">✔ Clear</span>
+        </p>
+    </div>
+
+    <!-- Lines -->
+    <h3>Lines</h3>
+    <table border="1" cellpadding="10" cellspacing="0"
+           style="width:100%; background:white; border-collapse:collapse; margin-bottom:1rem;">
+        <thead style="background-color:#003366; color:white;">
+            <tr>
+                <th>MSISDN</th>
+                <th>Plan</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="line in lines" :key="line.id">
+                <td>[[ line.msisdn ]]</td>
+                <td>[[ line.plan || 'No plan' ]]</td>
+                <td>
+                    <span :style="statusStyle(line.status)">
+                        [[ line.status.toUpperCase() ]]
+                    </span>
+                </td>
+            </tr>
+            <tr v-if="lines.length === 0">
+                <td colspan="3" style="text-align:center;">No lines found.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Invoices -->
+    <h3>Invoices</h3>
+    <table border="1" cellpadding="10" cellspacing="0"
+           style="width:100%; background:white; border-collapse:collapse;">
+        <thead style="background-color:#003366; color:white;">
+            <tr>
+                <th>Invoice ID</th>
+                <th>Amount</th>
+                <th>Due Date</th>
+                <th>Paid</th>
+                <th>Overdue</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="invoice in invoices" :key="invoice.id">
+                <td>[[ invoice.id ]]</td>
+                <td>R[[ invoice.amount ]]</td>
+                <td>[[ invoice.due_date ]]</td>
+                <td>
+                    <span v-if="invoice.is_paid" style="color:green;">✔ Paid</span>
+                    <span v-else style="color:red;">✘ Unpaid</span>
+                </td>
+                <td>
+                    <span v-if="invoice.is_overdue" style="color:red; font-weight:bold;">⚠ Overdue</span>
+                    <span v-else style="color:green;">✔ OK</span>
+                </td>
+                <td>
+                    <button v-if="!invoice.is_paid" @click="payInvoice(invoice.id)"
+                            style="background:green; color:white; border:none; padding:5px 10px; cursor:pointer;">
+                        Pay
+                    </button>
+                    <span v-else style="color:grey;">—</span>
+                </td>
+            </tr>
+            <tr v-if="invoices.length === 0">
+                <td colspan="6" style="text-align:center;">No invoices found.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<script>
+    const { createApp } = Vue
+
+    const accountId = "{{ account_id }}"
+
+    createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                account: null,
+                lines: [],
+                invoices: [],
+                loading: true,
+                error: null
+            }
+        },
+        methods: {
+            async fetchAccount() {
+                try {
+                    const response = await fetch(`/api/accounts/${accountId}/`)
+                    this.account = await response.json()
+                } catch (err) {
+                    this.error = 'Failed to load account.'
+                }
+            },
+            async fetchLines() {
+                try {
+                    const response = await fetch('/api/lines/')
+                    const all = await response.json()
+                    this.lines = all.filter(l => l.account === parseInt(accountId))
+                } catch (err) {
+                    this.error = 'Failed to load lines.'
+                }
+            },
+            async fetchInvoices() {
+                try {
+                    const response = await fetch('/api/invoices/')
+                    const all = await response.json()
+                    this.invoices = all.filter(i => i.account === parseInt(accountId))
+                } catch (err) {
+                    this.error = 'Failed to load invoices.'
+                }
+            },
+            async payInvoice(id) {
+                try {
+                    await fetch(`/api/invoices/${id}/pay/`, { method: 'POST' })
+                    await this.fetchInvoices()
+                    await this.fetchAccount()
+                    await this.fetchLines()
+                } catch (err) {
+                    this.error = 'Failed to pay invoice.'
+                }
+            },
+            statusStyle(status) {
+                const styles = {
+                    active: 'color: green; font-weight: bold;',
+                    suspended: 'color: orange; font-weight: bold;',
+                    provisioned: 'color: blue; font-weight: bold;',
+                    closed: 'color: red; font-weight: bold;'
+                }
+                return styles[status] || 'color: grey;'
+            }
+        },
+        async mounted() {
+            await Promise.all([
+                this.fetchAccount(),
+                this.fetchLines(),
+                this.fetchInvoices()
+            ])
+            this.loading = false
+        }
+    }).mount('#app')
+</script>
+{% endblock %}

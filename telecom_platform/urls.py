@@ -23,4 +23,6 @@ urlpatterns = [
     path('api/', include('lines.urls')),
     path('api/', include('billing.urls')),
     path('', include('accounts.urls')),
+    path('', include('lines.urls')),
+    path('', include('billing.urls')),
 ]

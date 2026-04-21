@@ -24,9 +24,7 @@
                 <td>{{ account.email }}</td>
                 <td>{{ account.phone_number }}</td>
                 <td>
-                    <span :style="statusStyle(account.status)">
-                        {{ account.status }}
-                    </span>
+                    <a :href="'/accounts/' + account.id + '/'"> [[ account.name ]]</a>
                 </td>
                 <td>
                     <span v-if="account.is_in_arrears" style="color:red; font-weight:bold;">

@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="24783df1-d0f5-4538-8405-5303a798acc5" name="Changes" comment="day 2" />
+    <list default="true" id="24783df1-d0f5-4538-8405-5303a798acc5" name="Changes" comment="day 2">
+      <change afterPath="$PROJECT_DIR$/ReadMe.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/accounts/account_details.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/billing/invoice_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/billing/plan_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/lines/line_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/billing/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/billing/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/billing/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/billing/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lines/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/lines/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lines/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/lines/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/telecom_platform/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/telecom_platform/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/accounts/account_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/accounts/account_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,14 +29,26 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Lerickal&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Lerickal/telecom_platform.git&quot;,
+    &quot;accountId&quot;: &quot;996d1ebd-0b41-4350-9d13-9a77d7d06d04&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7,
   &quot;fromUser&quot;: false
@@ -45,6 +73,7 @@
     "django.template.preview.state": "SHOW_EDITOR_AND_PREVIEW",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
+    "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -92,7 +121,8 @@
       <option name="presentableId" value="Default" />
       <updated>1776761439389</updated>
       <workItem from="1776761440392" duration="10230000" />
-      <workItem from="1776773892207" duration="2954000" />
+      <workItem from="1776773892207" duration="3545000" />
+      <workItem from="1776793272277" duration="2787000" />
     </task>
     <task id="LOCAL-00001" summary="day 2">
       <option name="closed" value="true" />

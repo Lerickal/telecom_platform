@@ -34,3 +34,6 @@ class LineViewSet(viewsets.ModelViewSet):
             return Response({'status': 'Line restored', 'line_id': line.id})
         except ValueError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+def line_list_view(request):
+    return render(request, 'lines/line_list.html')

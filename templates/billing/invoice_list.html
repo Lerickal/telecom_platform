@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="app">
+    <h2>Invoices</h2>
+
+    <p v-if="loading">Loading invoices...</p>
+    <p v-if="error" style="color:red;">[[ error ]]</p>
+
+    <!-- Summary -->
+    <div style="display:flex; gap:1rem; margin-bottom:1rem;">
+        <div style="background:white; padding:1rem; flex:1; text-align:center;">
+            <h3 style="margin:0;">[[ invoices.length ]]</h3>
+            <p style="margin:0;">Total Invoices</p>
+        </div>
+        <div style="background:white; padding:1rem; flex:1; text-align:center;">
+            <h3 style="margin:0; color:green;">[[ paidCount ]]</h3>
+            <p style="margin:0;">Paid</p>
+        </div>
+        <div style="background:white; padding:1rem; flex:1; text-align:center;">
+            <h3 style="margin:0; color:red;">[[ unpaidCount ]]</h3>
+            <p style="margin:0;">Unpaid</p>
+        </div>
+        <div style="background:white; padding:1rem; flex:1; text-align:center;">
+            <h3 style="margin:0; color:orange;">[[ overdueCount ]]</h3>
+            <p style="margin:0;">Overdue</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div style="margin-bottom:1rem;">
+        <label><strong>Filter: </strong></label>
+        <button @click="filter = 'all'" :style="filterStyle('all')">All</button>
+        <button @click="filter = 'unpaid'" :style="filterStyle('unpaid')">Unpaid</button>
+        <button @click="filter = 'overdue'" :style="filterStyle('overdue')">Overdue</button>
+        <button @click="filter = 'paid'" :style="filterStyle('paid')">Paid</button>
+    </div>
+
+    <table border="1" cellpadding="10" cellspacing="0"
+           style="width:100%; background:white; border-collapse:collapse;">
+        <thead style="background-color:#003366; color:white;">
+            <tr>
+                <th>Invoice ID</th>
+                <th>Account</th>
+                <th>Amount</th>
+                <th>Due Date</th>
+                <th>Paid</th>
+                <th>Overdue</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="invoice in filteredInvoices" :key="invoice.id">
+                <td>[[ invoice.id ]]</td>
+                <td>[[ invoice.account ]]</td>
+                <td>R[[ invoice.amount ]]</td>
+                <td>[[ invoice.due_date ]]</td>
+                <td>
+                    <span v-if="invoice.is_paid" style="color:green;">✔ Paid</span>
+                    <span v-else style="color:red;">✘ Unpaid</span>
+                </td>
+                <td>
+                    <span v-if="invoice.is_overdue" style="color:red; font-weight:bold;">⚠ Overdue</span>
+                    <span v-else style="color:green;">✔ OK</span>
+                </td>
+                <td>
+                    <button v-if="!invoice.is_paid" @click="payInvoice(invoice.id)"
+                            style="background:green; color:white; border:none; padding:5px 10px; cursor:pointer;">
+                        Pay
+                    </button>
+                    <span v-else style="color:grey;">—</span>
+                </td>
+            </tr>
+            <tr v-if="filteredInvoices.length === 0">
+                <td colspan="7" style="text-align:center;">No invoices found.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<script>
+    const { createApp } = Vue
+
+    createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                invoices: [],
+                loading: true,
+                error: null,
+                filter: 'all'
+            }
+        },
+        computed: {
+            paidCount() {
+                return this.invoices.filter(i => i.is_paid).length
+            },
+            unpaidCount() {
+                return this.invoices.filter(i => !i.is_paid).length
+            },
+            overdueCount() {
+                return this.invoices.filter(i => i.is_overdue).length
+            },
+            filteredInvoices() {
+                if (this.filter === 'paid') return this.invoices.filter(i => i.is_paid)
+                if (this.filter === 'unpaid') return this.invoices.filter(i => !i.is_paid)
+                if (this.filter === 'overdue') return this.invoices.filter(i => i.is_overdue)
+                return this.invoices
+            }
+        },
+        methods: {
+            async fetchInvoices() {
+                try {
+                    const response = await fetch('/api/invoices/')
+                    this.invoices = await response.json()
+                } catch (err) {
+                    this.error = 'Failed to load invoices.'
+                } finally {
+                    this.loading = false
+                }
+            },
+            async payInvoice(id) {
+                try {
+                    await fetch(`/api/invoices/${id}/pay/`, { method: 'POST' })
+                    await this.fetchInvoices()
+                } catch (err) {
+                    this.error = 'Failed to pay invoice.'
+                }
+            },
+            filterStyle(type) {
+                const active = 'background:#003366; color:white; border:none; padding:5px 10px; cursor:pointer; margin-right:5px;'
+                const inactive = 'background:#ccc; color:black; border:none; padding:5px 10px; cursor:pointer; margin-right:5px;'
+                return this.filter === type ? active : inactive
+            }
+        },
+        mounted() {
+            this.fetchInvoices()
+        }
+    }).mount('#app')
+</script>
+{% endblock %}

@@ -48,3 +48,10 @@ class InvoiceViewSet(viewsets.ModelViewSet):
             })
         except ValueError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+def invoice_list_view(request):
+    return render(request, 'billing/invoice_list.html')
+
+def plan_list_view(request):
+    return render(request, 'billing/plan_list.html')

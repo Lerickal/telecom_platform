@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="app">
+    <h2>Lines</h2>
+
+    <p v-if="loading">Loading lines...</p>
+    <p v-if="error" style="color:red;">[[ error ]]</p>
+
+    <table v-if="!loading" border="1" cellpadding="10" cellspacing="0"
+           style="width:100%; background:white; border-collapse: collapse;">
+        <thead style="background-color: #003366; color: white;">
+            <tr>
+                <th>MSISDN</th>
+                <th>Account</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="line in lines" :key="line.id">
+                <td>[[ line.msisdn ]]</td>
+                <td>[[ line.account ]]</td>
+                <td>[[ line.plan || 'No plan assigned' ]]</td>
+                <td>
+                    <span :style="statusStyle(line.status)">
+                        [[ line.status.toUpperCase() ]]
+                    </span>
+                </td>
+                <td>
+                    <button v-if="line.status === 'provisioned'" @click="activateLine(line.id)"
+                            style="background:#003366; color:white; border:none; padding:5px 10px; cursor:pointer;">
+                        Activate
+                    </button>
+                    <button v-if="line.status === 'active'" @click="suspendLine(line.id)"
+                            style="background:orange; color:white; border:none; padding:5px 10px; cursor:pointer;">
+                        Suspend
+                    </button>
+                    <button v-if="line.status === 'suspended'" @click="restoreLine(line.id)"
+                            style="background:green; color:white; border:none; padding:5px 10px; cursor:pointer;">
+                        Restore
+                    </button>
+                </td>
+            </tr>
+            <tr v-if="lines.length === 0">
+                <td colspan="5" style="text-align:center;">No lines found.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<script>
+    const { createApp } = Vue
+
+    createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                lines: [],
+                loading: true,
+                error: null
+            }
+        },
+        methods: {
+            async fetchLines() {
+                try {
+                    const response = await fetch('/api/lines/')
+                    const data = await response.json()
+                    this.lines = data
+                } catch (err) {
+                    this.error = 'Failed to load lines.'
+                } finally {
+                    this.loading = false
+                }
+            },
+            async activateLine(id) {
+                try {
+                    await fetch(`/api/lines/${id}/activate/`, { method: 'POST' })
+                    await this.fetchLines()
+                } catch (err) {
+                    this.error = 'Failed to activate line.'
+                }
+            },
+            async suspendLine(id) {
+                try {
+                    await fetch(`/api/lines/${id}/suspend/`, { method: 'POST' })
+                    await this.fetchLines()
+                } catch (err) {
+                    this.error = 'Failed to suspend line.'
+                }
+            },
+            async restoreLine(id) {
+                try {
+                    await fetch(`/api/lines/${id}/restore/`, { method: 'POST' })
+                    await this.fetchLines()
+                } catch (err) {
+                    this.error = 'Failed to restore line.'
+                }
+            },
+            statusStyle(status) {
+                const styles = {
+                    active: 'color: green; font-weight: bold;',
+                    suspended: 'color: orange; font-weight: bold;',
+                    provisioned: 'color: blue; font-weight: bold;'
+                }
+                return styles[status] || 'color: grey;'
+            }
+        },
+        mounted() {
+            this.fetchLines()
+        }
+    }).mount('#app')
+</script>
+{% endblock %}

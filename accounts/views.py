@@ -12,3 +12,6 @@ class AccountViewSet(viewsets.ModelViewSet):
 def account_list_view(request):
     accounts = Account.objects.all()
     return render(request, 'accounts/account_list.html', {'accounts': accounts})
+
+def account_details_view(request, pk):
+    return render(request, 'accounts/account_details.html', {'account_id': pk})
