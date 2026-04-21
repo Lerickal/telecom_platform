@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="app">
+    <h2>Customer Accounts</h2>
+
+    <p v-if="loading">Loading accounts...</p>
+    <p v-if="error" style="color:red;">{{ error }}</p>
+
+    <table v-if="!loading" border="1" cellpadding="10" cellspacing="0"
+           style="width:100%; background:white; border-collapse: collapse;">
+        <thead style="background-color: #003366; color: white;">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Arrears</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="account in accounts" :key="account.id">
+                <td>{{ account.name }}</td>
+                <td>{{ account.email }}</td>
+                <td>{{ account.phone_number }}</td>
+                <td>
+                    <span :style="statusStyle(account.status)">
+                        {{ account.status }}
+                    </span>
+                </td>
+                <td>
+                    <span v-if="account.is_in_arrears" style="color:red; font-weight:bold;">
+                        ⚠ In Arrears
+                    </span>
+                    <span v-else style="color:green;">
+                        ✔ Clear
+                    </span>
+                </td>
+            </tr>
+            <tr v-if="accounts.length === 0">
+                <td colspan="5" style="text-align:center;">No accounts found.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Vue CDN -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<script>
+    const { createApp } = Vue
+
+    createApp({
+        data() {
+            return {
+                accounts: [],
+                loading: true,
+                error: null
+            }
+        },
+        methods: {
+            async fetchAccounts() {
+                try {
+                    const response = await fetch('/api/accounts/')
+                    const data = await response.json()
+                    this.accounts = data
+                } catch (err) {
+                    this.error = 'Failed to load accounts.'
+                } finally {
+                    this.loading = false
+                }
+            },
+            statusStyle(status) {
+                const styles = {
+                    active: 'color: green; font-weight: bold;',
+                    suspended: 'color: orange; font-weight: bold;',
+                    closed: 'color: red; font-weight: bold;'
+                }
+                return styles[status] || 'color: grey;'
+            }
+        },
+        mounted() {
+            this.fetchAccounts()
+        }
+    }).mount('#app')
+</script>
+{% endblock %}
