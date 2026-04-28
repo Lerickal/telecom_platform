@@ -59,7 +59,10 @@
         methods: {
             async fetchAccounts() {
                 try {
-                    const response = await fetch('/api/accounts/')
+                    const token = localStorage.getItem('token')
+                    const response = await fetch('/api/accounts/', {
+                        headers: {'Authorization': 'Token ' + token}
+                    })
                     const data = await response.json()
                     this.accounts = data
                 } catch (err) {

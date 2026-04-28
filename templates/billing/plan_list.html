@@ -85,7 +85,10 @@
         methods: {
             async fetchPlans() {
                 try {
-                    const response = await fetch('/api/plans/')
+                    const token = localStorage.getItem('token')
+                    const response = await fetch('/api/plans/', {
+                        headers: {'Authorization': 'Token ' + token}
+                    })
                     this.plans = await response.json()
                 } catch (err) {
                     this.error = 'Failed to load plans.'

@@ -112,7 +112,10 @@
         methods: {
             async fetchAccount() {
                 try {
-                    const response = await fetch(`/api/accounts/${accountId}/`)
+                    const token = localStorage.getItem('token')
+                    const response = await fetch('/api/accounts/', {
+                        headers: {'Authorization': 'Token ' + token}
+                    })
                     this.account = await response.json()
                 } catch (err) {
                     this.error = 'Failed to load account.'
@@ -120,7 +123,10 @@
             },
             async fetchLines() {
                 try {
-                    const response = await fetch('/api/lines/')
+                    const token = localStorage.getItem('token')
+                    const response = await fetch('/api/lines/', {
+                        headers: {'Authorization': 'Token ' + token}
+                    })
                     const all = await response.json()
                     this.lines = all.filter(l => l.account === parseInt(accountId))
                 } catch (err) {
@@ -129,7 +135,10 @@
             },
             async fetchInvoices() {
                 try {
-                    const response = await fetch('/api/invoices/')
+                    const token = localStorage.getItem('token')
+                    const response = await fetch('/api/invoices/', {
+                        headers: {'Authorization': 'Token ' + token}
+                    })
                     const all = await response.json()
                     this.invoices = all.filter(i => i.account === parseInt(accountId))
                 } catch (err) {

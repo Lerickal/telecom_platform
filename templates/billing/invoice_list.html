@@ -113,7 +113,10 @@
         methods: {
             async fetchInvoices() {
                 try {
-                    const response = await fetch('/api/invoices/')
+                    const token = localStorage.getItem('token')
+                    const response = await fetch('/api/invoices/', {
+                        headers: {'Authorization': 'Token ' + token}
+                    })
                     this.invoices = await response.json()
                 } catch (err) {
                     this.error = 'Failed to load invoices.'

@@ -33,9 +33,37 @@
         <a href="/lines/">Lines</a>
         <a href="/invoices/">Invoices</a>
         <a href="/plans/">Plans</a>
+        <div>
+            <span id="nav-username" style="margin-right:1rem;"></span>
+            <button onclick="logout()">Logout</button>
+        </div>
     </nav>
     <div class="container">
         {% block content %}{% endblock %}
     </div>
+
+    <script>
+        // Redirect to login if no token
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/login/'
+        }
+
+        // Show username in nav
+        const username = localStorage.getItem('username')
+        if (username) {
+            document.getElementById('nav-username').textContent = username
+        }
+
+        async function logout() {
+            const token = localStorage.getItem('token')
+            await fetch('/api/auth/logout/', {
+                method: 'POST',
+                headers: { 'Authorization': 'Token ' + token }
+            })
+            localStorage.removeItem('token')
+            localStorage.removeItem('username')
+            window.location.href = '/login/'
+        }
+    </script>
 </body>
 </html>
